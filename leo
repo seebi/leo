@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -X
 #
 # This little handy script grabs the german/english translation for a
 # given term from http://dict.leo.org. Thanks the LEO folks for their
@@ -246,17 +246,23 @@ if(! @match) {
 }
 
 $maxsize += 5;
-print "Found $lines matches for '$string' on dict.leo.org:\n";
+if ($lines > 0) {
+  print "Found $lines matches for '$string' on dict.leo.org:\n";
+} else {
+  print "No matches found for '$string' on dict.leo.org\n";
+}
 
 #
 # print it out in a formated manner, keep the order of dict.leo.org
 #
 foreach my $section (@match) {
-  if ($highlight) {
-    print "\n${bold_c}$section->{title}${default_c}\n";
-  }
-  else {
-    print "\n$section->{title}\n";
+  if ($section->{title}) {
+    if ($highlight) {
+      print "\n.${bold_c}$section->{title}${default_c}\n";
+    }
+    else {
+      print "\n$section->{title}\n";
+    }
   }
 
   foreach my $entry (@{$section->{data}}) {
@@ -265,18 +271,17 @@ foreach my $section (@match) {
       $entry->{left}  =~ s/(\Q$string\E)/$bold_c . $1 . $default_c/ei;
       $entry->{right} =~ s/(\Q$string\E)/$bold_c . $1 . $default_c/ei;
     }
-    print " $entry->{left}$entry->{right}\n";
+    if ( ($entry->{left}) && ($entry->{right}) ) {
+        print " $entry->{left}$entry->{right}\n";
+    }
   }
 }
 
-
-print "$copy_c" if $highlight;
-print "\n     Fetched by leo $version via http://dict.leo.org/";
-print "\n     Copyright  ©  LEO  Dictionary Team 1995-2007";
-print "\n     [leo] GPL Copyleft © Thomas Linden 2000-2007\n\n";
-print "$default_c" if $highlight;
-
-
+#print "$copy_c" if $highlight;
+#print "\n     ddFetched by leo $version via http://dict.leo.org/";
+#print "\n     Copyright  ©  LEO  Dictionary Team 1995-2007";
+#print "\n     [leo] GPL Copyleft © Thomas Linden 2000-2007\n\n";
+#print "$default_c" if $highlight;
 
 sub parserror {
   my $msg = shift;
